@@ -1,5 +1,4 @@
 #include "lib.hpp"
-#include "log_level.hpp"
 
 int main() {
 	std::string fileName = "./temp_log.log";
