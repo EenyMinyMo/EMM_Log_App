@@ -1,7 +1,7 @@
 #include "lib.hpp"
 
 int main() {
-	std::string fileName = "./temp_log.log";
+	std::string fileName = "./temp/temp_log.log";
 	EMMLogger::Logger logger(fileName, EMMLogger::LogLevel::error);
 
 	logger.log(time(NULL), "str1");
