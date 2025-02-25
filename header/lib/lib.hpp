@@ -15,14 +15,14 @@ namespace EMMLogger {
 		LogLevel logLevel;
 
 	public:
-		Logger(std::string fileName, LogLevel defaultLogLevel);
+		Logger(const std::string &fileName, LogLevel defaultLogLevel);
 		Logger(Logger &l) = delete;
 		Logger& operator=(Logger &l) = delete;
 
 		void setLogLevel(LogLevel ll);
 
-		void log(LogLevel ll, std::time_t time, std::string mess);
-		void log(std::time_t time, std::string mes);
+		void log(LogLevel ll, std::time_t time, const std::string &mess);
+		void log(std::time_t time, const std::string &mes);
 
 		~Logger();
 	};

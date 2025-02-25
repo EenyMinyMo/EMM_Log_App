@@ -38,7 +38,7 @@ namespace EMMLogger {
 		}
 	}
 
-	Logger::Logger(std::string fileName, LogLevel defaultLogLevel) : logOutStream(fileName), logLevel(defaultLogLevel) {
+	Logger::Logger(const std::string &fileName, LogLevel defaultLogLevel) : logOutStream(fileName), logLevel(defaultLogLevel) {
 		if (!logOutStream) {
 			throwOutputStreamException();
 		}
@@ -52,7 +52,7 @@ namespace EMMLogger {
 		logLevel = ll;
 	}
 
-	void Logger::log(LogLevel ll, std::time_t time, std::string mess) {
+	void Logger::log(LogLevel ll, std::time_t time, const std::string &mess) {
 		if (!logOutStream) {
 			throwOutputStreamException();
 		}
@@ -85,10 +85,10 @@ namespace EMMLogger {
 		insertZeroIfNeed(sec, logOutStream);
 		logOutStream << sec;
 
-		logOutStream << " [" << logLevelToStr(ll) << "] " << mess << "\n";
+		logOutStream << " [" << logLevelToStr(ll) << "] " << mess << std::endl;
 	}
 
-	void Logger::log(std::time_t time, std::string mes) {
+	void Logger::log(std::time_t time, const std::string &mes) {
 		log(logLevel, time, mes);
 	}
 }
