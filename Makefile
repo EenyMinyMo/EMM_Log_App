@@ -12,7 +12,7 @@ TEMP = ./temp
 INCLUDE = ./header
 
 SUBDIRS = $(SRC) $(OBJ) $(EXE)
-TEMPDIRS = $(EXE) $(TEMP) $(OBJ)
+TEMPDIRS = $(EXE) $(TEMP)
 
 LD_LIBRARY_PATH = LIBTARGET
 
@@ -27,7 +27,7 @@ APPTARGET = $(EXE)/app
 
 ALLINCLUDE = $(INCLUDE)/lib/lib.hpp $(INCLUDE)/app/task.hpp $(INCLUDE)/app/task_queue.hpp $(INCLUDE)/app/pc_threads.hpp
 
-.PHONY: main dyn_lib tempdirs clean subdirs
+.PHONY: app dyn_lib subdirs clean
 
 dyn_lib: $(LIBCPP) $(INCLUDE)/lib/lib.hpp
 	$(CC) $(SHARED_FLAGS) -I$(INCLUDE) $< -o $(LIBTARGET)
@@ -41,10 +41,8 @@ task_queue.o: $(APPDIR)/task_queue.cpp $(ALLINCLUDE)
 pc_threads.o: $(APPDIR)/pc_threads.cpp $(ALLINCLUDE)
 	$(CC) $(CFLAGS) -I$(INCLUDE) -c $(OBJ)/$< -o $(OBJ)/$@
 
-main: $(APPCPP) $(ALLINCLUDE) dyn_lib
-	$(CC) $(CFLAGS) -I$(INCLUDE) $(APPCPP) $(LIBTARGET) -o $(EXE)/$@ 
-
-#main: task.o task_queue.o pc_threads.o main.o dyn_lib
+app: $(APPCPP) $(ALLINCLUDE) dyn_lib
+	$(CC) $(CFLAGS) -I$(INCLUDE) $(APPCPP) $(LIBTARGET) -o $(APPTARGET)
 
 clean:
 	for dir in $(TEMPDIRS); do \
