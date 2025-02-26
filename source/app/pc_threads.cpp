@@ -64,13 +64,23 @@ static void sendTaskPushAndWait(EMMTaskQueue::ConcurrentTaskQueue &queue, std::u
 
 void Producer::operator()() {
 	try {
-		while (!std::cin.eof() && (std::cin) && *isAlive && *consumerAliveFlag) {
+		while ((std::cin) && *isAlive && *consumerAliveFlag) {
 			std::string str;
 			getline(std::cin, str);
 
+			if (std::cin.eof()) {
+				break;
+			}
+
 			std::time_t time = std::time(0);
 
-			if (str.size() == 0) {
+			int fnpc = str.find_first_not_of(" ");	//первый непробельный символ в строке
+			if (fnpc == std::string::npos) {
+				std::cout << "No message" << std::endl;
+				continue;
+			}
+			std::string partialTrimmedString = str.substr(str.find_first_not_of(" "));
+			if (partialTrimmedString.size() == 0) {
 				std::cout << "No message" << std::endl;
 				continue;
 			}
@@ -78,30 +88,31 @@ void Producer::operator()() {
 			std::unique_ptr<EMMTask::ITask> *up;
 
 			int llCode = -1;
-			if (sscanf(str.c_str(), logLevelDecodeString, &llCode) == 1) {	//поиск кода уровня логирования
+			if (sscanf(partialTrimmedString.c_str(), logLevelDecodeString, &llCode) == 1) {	//поиск кода уровня логирования
 				EMMLogger::LogLevel ll;
 				bool flag = EMMLogger::logLevelFromInt(llCode, ll);
 				if (flag) {	//если уровень логирования введен правильно
-					int messStart = str.find(" ");
+					int messStart = partialTrimmedString.find(" ");
 					if (messStart == std::string::npos) {	//сообщения нет
 						std::cout << "No message" << std::endl;
 						continue;
 					}
 
-					messStart = str.find_first_not_of(" ", messStart);
+					messStart = partialTrimmedString.find_first_not_of(" ", messStart);
 					if (messStart == std::string::npos) {	//сообщения нет
 						std::cout << "No message" << std::endl;
 						continue;
 					}
 
-					std::string message = str.substr(messStart + 1);
+					std::string message = partialTrimmedString.substr(messStart + 1);
 					std::unique_ptr<EMMTask::ITask> up = std::make_unique<EMMTask::SendLogTaskLL>(EMMTask::SendLogTaskLL(logger, ll, time, message));
 					sendTaskPushNoWait(taskQueue, std::move(up));
 				} else {	//уровень логирования введен неверно, не логируем
 					std::cout << "Please enter log level code in right range" << std::endl;
 				}
 			} else {	//код уровня логирования отсутствует
-				std::unique_ptr<EMMTask::ITask> up = std::make_unique<EMMTask::SendLogTask>(EMMTask::SendLogTask(logger, time, str));
+
+				std::unique_ptr<EMMTask::ITask> up = std::make_unique<EMMTask::SendLogTask>(EMMTask::SendLogTask(logger, time, partialTrimmedString));
 				sendTaskPushNoWait(taskQueue, std::move(up));
 			}
 		}
