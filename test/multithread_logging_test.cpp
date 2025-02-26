@@ -41,7 +41,11 @@ public:
 
 			// EMMTask::SendLogTaskLL *sltl = new EMMTask::SendLogTaskLL(logger, ll, t, str);
 			std::unique_ptr<EMMTask::ITask> up = std::make_unique<EMMTask::SendLogTaskLL>(EMMTask::SendLogTaskLL(logger, ll, t, str));
-			taskQueue.push(std::move(up));
+			try {
+				taskQueue.push(std::move(up));
+			} catch (EMMTaskQueue::QueueOverflowException &e) {
+				std::cout << "Prod " << prodNumber << " queue buf overflow, mess \"" << str << "\" not logged" << std::endl; 
+			}
 
 			std::chrono::milliseconds timespan(sleep_dist(gen));
 			std::this_thread::sleep_for(timespan);
@@ -59,12 +63,16 @@ public:
 
 	void operator()() {
 		std::cout << "start consumber" << std::endl;
-		while (true) {
-			std::unique_ptr<EMMTask::ITask> taskp = taskQueue.pop();
-			if (dynamic_cast<EMMTask::PoisonPillTask*>(taskp.get())) {
-				break;
+		try {
+			while (true) {
+				std::unique_ptr<EMMTask::ITask> taskp = taskQueue.pop();
+				if (dynamic_cast<EMMTask::PoisonPillTask*>(taskp.get())) {
+					break;
+				}
+				taskp->run();
 			}
-			taskp->run();
+		} catch (EMMLogger::LoggerException &e) {
+			std::cout << e.what() << std::endl;
 		}
 		std::cout << "end consumber" << std::endl;
 	}
@@ -73,9 +81,9 @@ public:
 int main() {
 	std::cout << "start test" << std::endl;
 
-	std::string logFileName = "./temp/mt_log.txt";
+	std::string logFileName = "./temp/mt_log.log";
 	EMMLogger::Logger logger{ logFileName, EMMLogger::LogLevel::info };
-	EMMTaskQueue::ConcurrentTaskQueue queue{ 50 };
+	EMMTaskQueue::ConcurrentTaskQueue queue{ 5 };
 
 	std::thread consumerThread(Consumer(logger, queue));
 	std::thread producerThread_1(Producer(logger, queue, 1, 100));
