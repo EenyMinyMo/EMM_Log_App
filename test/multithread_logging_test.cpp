@@ -67,11 +67,10 @@ int main() {
 	std::thread producerThread_1(Producer(logger, queue, 1, 10000));
 	std::thread producerThread_2(Producer(logger, queue, 2, 10000));
 
-
 	producerThread_2.join();
 	producerThread_1.join();
 
-	queue.push(std::move(std::make_unique<EMM_PCThreads::ConsumerStoper>(consumer.createStoper())));
+	queue.push(std::move(std::make_unique<EMM_PCThreads::Stoper>(consumer.createStoper())));
 	consumerThread.join();
 
 	std::cout << "end test" << std::endl;
