@@ -6,26 +6,28 @@
 #include <ctime>
 
 namespace EMMLogger {
-	enum class LogLevel { info = 0,	warning, error };
 
-	const char* logLevelToStr(LogLevel ll);
+enum class LogLevel { info = 0,	warning = 1, error = 2 };
 
-	class Logger {
-		std::ofstream logOutStream;
-		LogLevel logLevel;
+const char* logLevelToStr(LogLevel ll);
 
-	public:
-		Logger(const std::string &fileName, LogLevel defaultLogLevel);
-		Logger(Logger &l) = delete;
-		Logger& operator=(Logger &l) = delete;
+class Logger {
+	std::ofstream logOutStream;
+	LogLevel logLevel;
 
-		void setLogLevel(LogLevel ll);
+public:
+	Logger(const std::string &fileName, LogLevel defaultLogLevel);
+	Logger(const Logger &l) = delete;
+	Logger& operator=(const Logger &l) = delete;
 
-		void log(LogLevel ll, std::time_t time, const std::string &mess);
-		void log(std::time_t time, const std::string &mes);
+	void setLogLevel(LogLevel ll);
 
-		~Logger();
-	};
-}
+	void log(LogLevel ll, std::time_t time, const std::string &mess);
+	void log(std::time_t time, const std::string &mes);
+
+	~Logger();
+};
+
+}	//namespace
 
 #endif
