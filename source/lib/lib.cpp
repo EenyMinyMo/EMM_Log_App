@@ -6,19 +6,16 @@
 
 namespace EMMLogger {
 
+//для получения строк, соответствующим уровню логирования
 static const char *logLevelStr[] = { "info", "warning", "error" };
 static const char *undefinedLogLevelStr = "*undefined log level";
 
+//вставляет дополнительный 0, если переданное число между 0 и 9
 static void insertZeroIfNeed(int val, std::ofstream &stream) {
 	if (val >= 0 && val < 10) {
 		stream << '0';
 	}
 }
-
-static void throwOutputStreamException(const char* mess) {
-	throw LoggerException(mess);	//TODO сделать исключение
-}
-
 
 const char* logLevelToStr(LogLevel ll) {
 	switch (ll) {
@@ -58,7 +55,7 @@ bool logLevelFromInt(int i, LogLevel &output) {
 
 Logger::Logger(const char *fileName, LogLevel defaultLogLevel) : logOutStream(fileName), logLevel(defaultLogLevel) {
 	if (!logOutStream) {
-		throwOutputStreamException("IO Exception Logger::Logger - file output stream error");
+		throw LoggerException("IO Exception Logger::Logger - file output stream error");
 	}
 }
 
@@ -72,14 +69,14 @@ void Logger::setLogLevel(LogLevel ll) {
 
 void Logger::log(LogLevel ll, std::time_t time, const std::string &mess) {
 	if (!logOutStream) {
-		throwOutputStreamException("IO Exception Logger::log(LogLevel, std::time_t, const std::string) - file output stream error");
+		throw LoggerException("IO Exception Logger::log(LogLevel, std::time_t, const std::string) - file output stream error");
 	}
 
-	if (ll < logLevel) {
+	if (ll < logLevel) {	//не логируем, если уровень лога ниже того, что по умолчанию
 		return;
 	}
 
-	std::tm *timeStamp = std::localtime(&time);
+	std::tm *timeStamp = std::localtime(&time);	//Время лога -> дата лога
 	
 	logOutStream << (timeStamp->tm_year + 1900) << '-';
 

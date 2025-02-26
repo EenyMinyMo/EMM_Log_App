@@ -7,12 +7,18 @@
 
 namespace EMMTask {
 
+/*
+	Интерфейс для задач.
+*/
 class ITask {
 public:
 	virtual void run() = 0;
 	virtual ~ITask() = default;
 };
 
+/*
+	Задача для отправки лога с уровнем логирования.
+*/
 class SendLogTaskLL : public ITask {
 	EMMLogger::Logger &logger;
 	EMMLogger::LogLevel logLevel;
@@ -23,6 +29,9 @@ public:
 	void run() override;
 };
 
+/*
+	Задача для отправки лога без уровня логирования.
+*/
 class SendLogTask : public ITask {
 	EMMLogger::Logger &logger;
 	std::time_t time;
@@ -32,13 +41,9 @@ public:
 	void run() override;
 };
 
-// class CommonTask : public ITask {
-// 	ITask &runnable;
-// public:
-// 	CommonTask(ITask &runnable);
-// 	void run() override;
-// };
-
+/*
+	Задача для изменения уровня логирования по умолчанию в логере.
+*/
 class ChangeLogLevelTask : public ITask {
 	EMMLogger::Logger &logger;
 	EMMLogger::LogLevel logLevel;

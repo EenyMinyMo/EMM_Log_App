@@ -10,11 +10,20 @@
 
 namespace EMMTaskQueue {
 
+/*
+	Многопоточная очередь для задач-наследников EMMTask::ITask.
+	В конструкторе очереди задается максимальное кол-во элементов очереди.
+	Т.к. в очередь может писать несколько потоков, элементы могут поступать быстрее, чем будут обработаны -> нужно разумно ограничивать поступающие задачи.
+	У очереди всего 3 метода для взаимодействия:
+		- блокирующий метод popAndWait() - блокирует поток, если очередь пуста.
+		- блокирующий метод pushAndWait() - блокирует поток, если очередь полна.
+		- неблокирующий метод push() - если очередь полна, выбрасывает исключение QueueOverflowException. 
+*/
 class ConcurrentTaskQueue {
 	std::queue<std::unique_ptr<EMMTask::ITask>> queue;
 	std::mutex mutex;
-	std::condition_variable pop_conditional;
-	std::condition_variable push_conditional;
+	std::condition_variable pop_conditional;	//условная переменная для блокировки в pop
+	std::condition_variable push_conditional;	//условная переменная для блокировки в push
 	const int maxItems;
 public:
 	ConcurrentTaskQueue(int maxItems);

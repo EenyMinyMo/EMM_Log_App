@@ -61,7 +61,7 @@ int main() {
 	EMMLogger::Logger logger{ logFileName, EMMLogger::LogLevel::info };
 	EMMTaskQueue::ConcurrentTaskQueue queue{ 5 };
 
-	EMM_PCThreads::Consumer consumer(logger, queue);
+	EMMProdCons::Consumer consumer(queue);
 
 	std::thread consumerThread(consumer);
 	std::thread producerThread_1(Producer(logger, queue, 1, 10000));
@@ -70,7 +70,7 @@ int main() {
 	producerThread_2.join();
 	producerThread_1.join();
 
-	queue.push(std::move(std::make_unique<EMM_PCThreads::Stoper>(consumer.createStoper())));
+	queue.push(std::move(std::make_unique<EMMProdCons::Stoper>(consumer.createStoper())));
 	consumerThread.join();
 
 	std::cout << "end test" << std::endl;

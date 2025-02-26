@@ -10,10 +10,21 @@ namespace EMMLogger {
 
 enum class LogLevel { info = 0,	warning = 1, error = 2 };
 
+/*
+	Возвращает строку, соответсвующую переданному уровню логирования
+*/
 const char* logLevelToStr(LogLevel ll);
 
+/*
+	Записывает в output уровень логирования, соответствующий коду i и возвращает true.
+	Если i не соответствует уровню лога, в output ничего не записывается, возвращается false.
+*/
 bool logLevelFromInt(int i, LogLevel &output);
 
+/*
+	Логгер, записывающий данные в файл.
+	В случае ошибки операции с файлами выкидывает LoggerException.
+*/
 class Logger {
 	std::ofstream logOutStream;
 	LogLevel logLevel;
