@@ -25,6 +25,11 @@ public:
 	std::unique_ptr<EMMTask::ITask> pop();
 };
 
+class QueueOverflowException : public std::runtime_error {
+public:
+	explicit QueueOverflowException(const char* mess);
+};
+
 }	//namespace
 
 #endif

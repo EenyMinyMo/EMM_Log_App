@@ -3,6 +3,7 @@
 
 #include <string>
 #include <fstream>
+#include <stdexcept>
 #include <ctime>
 
 namespace EMMLogger {
@@ -26,6 +27,11 @@ public:
 	void log(std::time_t time, const std::string &mes);
 
 	~Logger();
+};
+
+class LoggerException : public std::runtime_error {
+public:
+	explicit LoggerException(const char* mess);
 };
 
 }	//namespace

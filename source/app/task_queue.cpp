@@ -24,7 +24,7 @@ void ConcurrentTaskQueue::push(std::unique_ptr<EMMTask::ITask> task) {
 	{
 		std::lock_guard<std::mutex> lockm(mutex);
 		if (currentItems == maxItems) {
-			throw 1;
+			throw QueueOverflowException("Concurrent task queue overflowed");
 		}
 		queue.push(std::move(task));
 		currentItems++;
@@ -42,5 +42,7 @@ std::unique_ptr<EMMTask::ITask> ConcurrentTaskQueue::pop() {
 
 	return task;
 }
+
+QueueOverflowException::QueueOverflowException(const char* mess) : std::runtime_error(mess) {}
 
 }	//namespace

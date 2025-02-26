@@ -1,5 +1,6 @@
 #include <string>
 #include <fstream>
+#include <stdexcept>
 #include <ctime>
 #include "lib/lib.hpp"
 
@@ -14,8 +15,8 @@ static void insertZeroIfNeed(int val, std::ofstream &stream) {
 	}
 }
 
-static void throwOutputStreamException() {
-	throw 1;	//TODO сделать исключение
+static void throwOutputStreamException(const char* mess) {
+	throw LoggerException(mess);	//TODO сделать исключение
 }
 
 
@@ -41,7 +42,7 @@ const char* logLevelToStr(LogLevel ll) {
 
 Logger::Logger(const std::string &fileName, LogLevel defaultLogLevel) : logOutStream(fileName), logLevel(defaultLogLevel) {
 	if (!logOutStream) {
-		throwOutputStreamException();
+		throwOutputStreamException("IO Exception Logger::Logger - file output stream error");
 	}
 }
 
@@ -55,7 +56,7 @@ void Logger::setLogLevel(LogLevel ll) {
 
 void Logger::log(LogLevel ll, std::time_t time, const std::string &mess) {
 	if (!logOutStream) {
-		throwOutputStreamException();
+		throwOutputStreamException("IO Exception Logger::log(LogLevel, std::time_t, const std::string) - file output stream error");
 	}
 
 	if (ll < logLevel) {
@@ -92,4 +93,7 @@ void Logger::log(LogLevel ll, std::time_t time, const std::string &mess) {
 void Logger::log(std::time_t time, const std::string &mes) {
 	log(logLevel, time, mes);
 }
+
+LoggerException::LoggerException(const char* mess) : std::runtime_error(mess) {}
+
 }	//namespace
