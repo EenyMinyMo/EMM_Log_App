@@ -18,28 +18,49 @@ public:
 	}
 };
 
-ConcurrentTaskQueue::ConcurrentTaskQueue(int maxItems) : maxItems(maxItems > 1 ? maxItems : 1), currentItems(0) {}
+template <typename T>
+class queue_full_predicate {
+	std::queue<T> &queue;
+	const int maxSize;
+public:
+	queue_full_predicate(std::queue<T> &queue, int maxSize) : queue(queue), maxSize(maxSize) {}
+	bool operator()() {
+		return queue.size() != maxSize;
+	}
+};
+
+
+ConcurrentTaskQueue::ConcurrentTaskQueue(int maxItems) : maxItems(maxItems > 1 ? maxItems : 1) {}
 
 void ConcurrentTaskQueue::push(std::unique_ptr<EMMTask::ITask> task) {
 	{
 		std::lock_guard<std::mutex> lockm(mutex);
-		if (currentItems == maxItems) {
+		if (queue.size() == maxItems) {
 			throw QueueOverflowException("Concurrent task queue overflowed");
 		}
 		queue.push(std::move(task));
-		currentItems++;
 	}
-	mutex_conditional.notify_one();
+	pop_conditional.notify_one();
 }
 
-std::unique_ptr<EMMTask::ITask> ConcurrentTaskQueue::pop() {
+void ConcurrentTaskQueue::pushAndWait(std::unique_ptr<EMMTask::ITask> task) {
+	{
+		std::unique_lock<std::mutex> lockm(mutex);
+		push_conditional.wait(lockm, queue_full_predicate(queue, maxItems));
+		queue.push(std::move(task));
+	}
+	pop_conditional.notify_one();
+}
+
+std::unique_ptr<EMMTask::ITask> ConcurrentTaskQueue::popAndWait() {
 	std::unique_lock<std::mutex> lockm(mutex);
-	mutex_conditional.wait(lockm, queue_emtpy_predicate(queue));
+	pop_conditional.wait(lockm, queue_emtpy_predicate(queue));
 
 	std::unique_ptr<EMMTask::ITask> task = std::move(queue.front());
 	queue.pop();
-	currentItems--;
+	lockm.unlock();
 
+	push_conditional.notify_one();
 	return task;
 }
 

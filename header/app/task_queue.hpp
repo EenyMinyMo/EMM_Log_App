@@ -13,16 +13,17 @@ namespace EMMTaskQueue {
 class ConcurrentTaskQueue {
 	std::queue<std::unique_ptr<EMMTask::ITask>> queue;
 	std::mutex mutex;
-	std::condition_variable mutex_conditional;
+	std::condition_variable pop_conditional;
+	std::condition_variable push_conditional;
 	const int maxItems;
-	int currentItems;
 public:
 	ConcurrentTaskQueue(int maxItems);
 	ConcurrentTaskQueue(const ConcurrentTaskQueue&) = delete;
 	ConcurrentTaskQueue& operator=(const ConcurrentTaskQueue&) = delete;
 
 	void push(std::unique_ptr<EMMTask::ITask>);
-	std::unique_ptr<EMMTask::ITask> pop();
+	void pushAndWait(std::unique_ptr<EMMTask::ITask>);
+	std::unique_ptr<EMMTask::ITask> popAndWait();
 };
 
 class QueueOverflowException : public std::runtime_error {

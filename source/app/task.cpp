@@ -16,9 +16,11 @@ void SendLogTask::run() {
 	logger.log(time, text);
 }
 
-void PoisonPillTask::run() {
-	//TODO закрыть поток вывода.
-}
+// CommonTask::CommonTask(ITask &runnable) : runnable(runnable) {}
+
+// void CommonTask::run()  {
+// 	runnable.run();
+// }
 
 ChangeLogLevelTask::ChangeLogLevelTask(EMMLogger::Logger &logger, EMMLogger::LogLevel ll) : logger(logger), logLevel(ll) {}
 

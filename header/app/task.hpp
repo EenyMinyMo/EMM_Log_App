@@ -9,7 +9,7 @@ namespace EMMTask {
 
 class ITask {
 public:
-	virtual void run() {}
+	virtual void run() = 0;
 	virtual ~ITask() = default;
 };
 
@@ -32,10 +32,12 @@ public:
 	void run() override;
 };
 
-class PoisonPillTask : public ITask {
-public:
-	void run() override;
-};
+// class CommonTask : public ITask {
+// 	ITask &runnable;
+// public:
+// 	CommonTask(ITask &runnable);
+// 	void run() override;
+// };
 
 class ChangeLogLevelTask : public ITask {
 	EMMLogger::Logger &logger;
