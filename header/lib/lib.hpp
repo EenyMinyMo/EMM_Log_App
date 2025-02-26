@@ -12,6 +12,8 @@ enum class LogLevel { info = 0,	warning = 1, error = 2 };
 
 const char* logLevelToStr(LogLevel ll);
 
+bool logLevelFromInt(int i, LogLevel &output);
+
 class Logger {
 	std::ofstream logOutStream;
 	LogLevel logLevel;

@@ -40,6 +40,22 @@ const char* logLevelToStr(LogLevel ll) {
 	}
 }
 
+bool logLevelFromInt(int i, LogLevel &output) {
+	LogLevel ll = static_cast<LogLevel>(i);
+	switch (ll) {
+		case LogLevel::info :
+		case LogLevel::warning :
+		case LogLevel::error : {
+			output = ll;
+			return true;
+		} break;
+
+		default: {
+			return false;
+		}
+	}
+}
+
 Logger::Logger(const char *fileName, LogLevel defaultLogLevel) : logOutStream(fileName), logLevel(defaultLogLevel) {
 	if (!logOutStream) {
 		throwOutputStreamException("IO Exception Logger::Logger - file output stream error");
