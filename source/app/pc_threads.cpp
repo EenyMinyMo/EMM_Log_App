@@ -104,7 +104,7 @@ void Producer::operator()() {
 						continue;
 					}
 
-					std::string message = partialTrimmedString.substr(messStart + 1);
+					std::string message = partialTrimmedString.substr(messStart);
 					std::unique_ptr<EMMTask::ITask> up = std::make_unique<EMMTask::SendLogTaskLL>(EMMTask::SendLogTaskLL(logger, ll, time, message));
 					sendTaskPushNoWait(taskQueue, std::move(up));
 				} else {	//уровень логирования введен неверно, не логируем
