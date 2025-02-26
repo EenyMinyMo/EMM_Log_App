@@ -1,4 +1,4 @@
-#include "lib.hpp"
+#include "lib/lib.hpp"
 
 int main() {
 	std::string fileName = "./temp/temp_log.log";
