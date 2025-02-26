@@ -81,7 +81,7 @@ public:
 int main() {
 	std::cout << "start test" << std::endl;
 
-	std::string logFileName = "./temp/mt_log.log";
+	const char *logFileName = "./temp/mt_log.log";
 	EMMLogger::Logger logger{ logFileName, EMMLogger::LogLevel::info };
 	EMMTaskQueue::ConcurrentTaskQueue queue{ 5 };
 

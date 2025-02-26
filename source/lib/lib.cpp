@@ -40,7 +40,7 @@ const char* logLevelToStr(LogLevel ll) {
 	}
 }
 
-Logger::Logger(const std::string &fileName, LogLevel defaultLogLevel) : logOutStream(fileName), logLevel(defaultLogLevel) {
+Logger::Logger(const char *fileName, LogLevel defaultLogLevel) : logOutStream(fileName), logLevel(defaultLogLevel) {
 	if (!logOutStream) {
 		throwOutputStreamException("IO Exception Logger::Logger - file output stream error");
 	}

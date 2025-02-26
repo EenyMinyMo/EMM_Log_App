@@ -17,7 +17,7 @@ class Logger {
 	LogLevel logLevel;
 
 public:
-	Logger(const std::string &fileName, LogLevel defaultLogLevel);
+	Logger(const char *fileName, LogLevel defaultLogLevel);
 	Logger(const Logger &l) = delete;
 	Logger& operator=(const Logger &l) = delete;
 
